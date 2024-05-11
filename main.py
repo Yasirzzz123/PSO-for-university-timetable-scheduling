@@ -45,19 +45,18 @@ class Timetable:
 
         # Initialize dictionaries to keep track of course and instructor occurrences
         course_count_per_week = {course.code: 0 for course in Classes.Course.courses}
-        timeslot = 0
 
         for timeslot_idx in range(current_position.shape[0]):
             course_count_per_timeslot = {course.code: 0 for course in Classes.Course.courses}
             instructor_count_per_timeslot = {instructor.name: 0 for instructor in Classes.FacultyMember.faculty_members}
-            department_count_per_timeslot = {course.department: 0 for course in Classes.Course.courses}
-            timeslot +=1
+
             for classroom_idx in range(current_position.shape[1]):
                 course_id = current_position[timeslot_idx, classroom_idx]
                 if course_id != -1:
                     course = Classes.Course.courses[int(course_id)]
                     instructor = course.instructor.name
-                    department = course.department
+                    department = course.department.department_name
+                    year_level = course.year_level.level_number
 
                     # Check if course is given more than once in a single timeslot
                     if course_count_per_timeslot[course.code] > 0:
@@ -69,15 +68,21 @@ class Timetable:
                         penalties += 1
                     course_count_per_week[course.code] += 1
 
-                    # Check if courses with similar departments appeared in the same timeslot
-                    if department_count_per_timeslot[department] > 0:
-                        penalties += 1
-                    department_count_per_timeslot[department] += 1
-
                     # Check if instructor is booked more than once in the same timeslot
                     if instructor_count_per_timeslot[instructor] > 0:
                         penalties += 1
                     instructor_count_per_timeslot[instructor] += 1
+
+                    # Checking if courses with similar departments appeared in the same timeslot
+                    # and have the same year level
+                    for c in range(current_position.shape[1]):
+                        if c != classroom_idx:
+                            other_course_id = current_position[timeslot_idx, c]
+                            if other_course_id != -1:
+                                other_course = Classes.Course.courses[int(other_course_id)]
+                                if other_course.department.department_name == department and other_course.year_level.level_number == year_level:
+                                    penalties += 1
+
         return penalties
 
 def PSO(Pop_size, Max_itr, w, c1, c2):
@@ -86,7 +91,7 @@ def PSO(Pop_size, Max_itr, w, c1, c2):
     timetables = []
     best_fitnesses = []
 
-    # Initialize a dictionary to store course IDs for each course
+    # Initialize a dictionary to store instructor IDs for each course
     course_ids = {course: idx for idx, course in enumerate(Classes.Course.courses)}
 
     # Position random initialization
@@ -162,7 +167,6 @@ def PSO(Pop_size, Max_itr, w, c1, c2):
     plt.show()
 
 
-
 # Create GUI for inputting PSO parameters
 def run_PSO_from_gui():
     try:
@@ -171,7 +175,7 @@ def run_PSO_from_gui():
         w = float(entry_w.get())
         c1 = float(entry_c1.get())
         c2 = float(entry_c2.get())
-        
+
         PSO(Pop_size, Max_itr, w, c1, c2)
     except ValueError:
         messagebox.showerror("Error", "Please enter valid numbers for all parameters.")
