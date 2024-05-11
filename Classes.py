@@ -6,6 +6,22 @@ class Faculty:
         self.faculties.append(self)
 
 
+class Level:
+    levels = []
+
+    def __init__(self, level_number):
+        self.level_number = level_number
+        self.levels.append(self)
+
+
+class Department:
+    departments = []
+
+    def __init__(self, department_name):
+        self.department_name = department_name
+        self.departments.append(self)
+
+
 class FacultyMember:
     faculty_members = []
 
@@ -19,12 +35,13 @@ class FacultyMember:
 class Course:
     courses = []
 
-    def __init__(self, code, title, duration, faculty, department, instructor):
+    def __init__(self, code, title, duration, faculty, department, year_level, instructor):
         self.code = code
         self.title = title
         self.duration = duration
         self.faculty = faculty
         self.department = department
+        self.year_level = year_level
         self.instructor = instructor
         self.courses.append(self)
 
