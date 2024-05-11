@@ -86,7 +86,7 @@ def PSO(Pop_size, Max_itr, w, c1, c2):
     timetables = []
     best_fitnesses = []
 
-    # Initialize a dictionary to store instructor IDs for each course
+    # Initialize a dictionary to store course IDs for each course
     course_ids = {course: idx for idx, course in enumerate(Classes.Course.courses)}
 
     # Position random initialization
