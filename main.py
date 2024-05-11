@@ -1,5 +1,3 @@
-# University timetable scheduling problem is a CONSTRAINED OPTIMIZATION type problem
-
 import numpy as np
 import random
 import Classes
@@ -7,7 +5,7 @@ import Data
 import tkinter as tk
 from tkinter import messagebox
 import matplotlib.pyplot as plt
-
+from matplotlib.animation import FuncAnimation
 
 class Timetable:
     def __init__(self, position, w, c1, c2):
@@ -160,12 +158,20 @@ def PSO(Pop_size, Max_itr, w, c1, c2):
                     f"Day: {day}, Time Slot: {start_time}-{Data.end_times[timeslot_idx]}, Lecture Hall: {classroom.room_number}, Course: {course_name.title.ljust(40)}, Instructor: {course_name.instructor.name}")
             print("-" * 80)
 
-    plt.plot(best_fitnesses)
-    plt.title('Best Fitness Value Evolution')
-    plt.xlabel('Iteration')
-    plt.ylabel('Fitness Value')
+
+    def update_plot(frame):
+        plt.cla()
+        plt.plot(best_fitnesses[:frame + 1])
+        plt.title('Best Fitness Value Evolution')
+        plt.xlabel('Iteration')
+        plt.ylabel('Fitness Value')
+
+    fig, ax = plt.subplots()
+    ani = FuncAnimation(fig, update_plot, frames=len(best_fitnesses), interval=200, repeat=False)
     plt.show()
 
+    # Return the best solution found
+    return swarm_best_position
 
 # Create GUI for inputting PSO parameters
 def run_PSO_from_gui():
@@ -205,5 +211,6 @@ entry_c2.grid(row=4, column=1, padx=5, pady=5)
 
 btn_run = tk.Button(root, text="Run PSO", command=run_PSO_from_gui)
 btn_run.grid(row=5, column=0, columnspan=2, pady=10)
+
 
 root.mainloop()
